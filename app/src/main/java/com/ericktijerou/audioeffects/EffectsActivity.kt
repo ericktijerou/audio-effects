@@ -97,7 +97,8 @@ class EffectsActivity : AppCompatActivity(), FFMpegCallback {
         setContentView(R.layout.activity_effects)
         mediaConverter = FFMpegMediaConverter(this)
         fileName = intent.getStringExtra("fileName").orEmpty()
-        fileNameNew = Environment.getExternalStorageDirectory().absolutePath + "/audioRecordNew.mp3"
+        val dir = File(filesDir, "recordFiles").createDirIfNotExists()
+        fileNameNew = dir.absolutePath + "/audioRecordNew.mp3"
         findViewById<ImageView>(R.id.ivBack).setOnClickListener {
             onBackPressed()
         }

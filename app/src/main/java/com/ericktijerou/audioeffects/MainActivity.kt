@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat
 import com.ericktijerou.audioeffects.library.AudioFile
 import com.ericktijerou.audioeffects.library.FFMpegCallback
 import com.ericktijerou.audioeffects.library.FFMpegMediaConverter
+import java.io.File
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
@@ -48,7 +49,7 @@ class MainActivity : AppCompatActivity() {
             player?.start()
             countDownTimer = object : CountDownTimer(31000, 1000) {
                 override fun onTick(millisUntilFinished: Long) {
-                    tvTimer?.setText((millisUntilFinished / 1000).toString() + "")
+                    tvTimer?.text = (millisUntilFinished / 1000).toString() + ""
                     if (tvTimer?.getText() === "1") {
                         Handler().postDelayed({
                             if (!isFinishing()) {
@@ -214,8 +215,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         countDownTimer?.start()
-        fileName =
-            getExternalFilesDir(null)?.absolutePath + "/audioRecord${System.currentTimeMillis()}.mp3"
+
+        val dir = File(filesDir, "recordFiles").createDirIfNotExists()
+        fileName = dir.absolutePath + "/audioRecord${System.currentTimeMillis()}.mp3"
         recorder = MediaRecorder()
         recorder?.setAudioSource(MediaRecorder.AudioSource.MIC)
         recorder?.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT)
@@ -240,5 +242,11 @@ class MainActivity : AppCompatActivity() {
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
+    }
+}
+
+fun File.createDirIfNotExists() = apply {
+    if (!exists()) {
+        mkdir()
     }
 }
