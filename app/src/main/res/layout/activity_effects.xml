@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:background="#ccc"
+    android:background="@color/white"
     android:orientation="vertical"
     tools:context=".EffectsActivity">
 
@@ -13,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
         android:background="#FFFFFF"
+        android:elevation="4dp"
         app:contentInsetEnd="0dp"
         app:contentInsetLeft="0dp"
         app:contentInsetRight="0dp"
@@ -55,38 +56,129 @@
 
     </androidx.appcompat.widget.Toolbar>
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tiEchoInGain"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_margin="16dp"
+        app:layout_constraintEnd_toEndOf="@id/guideLine"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnEcho">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etEchoInGain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="in_gain (0.1 - 1.0)"
+            android:inputType="numberDecimal"
+            android:padding="12dp"
+            android:text="0.6"
+            android:textSize="12sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tiEchoOutGain"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_margin="16dp"
+        app:layout_constraintEnd_toEndOf="@id/guideLine"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tiEchoInGain">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etEchoOutGain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="out_gain (0.1- 1.0)"
+            android:inputType="numberDecimal"
+            android:padding="12dp"
+            android:text="0.3"
+            android:textSize="12sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tiEchoDelays"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_margin="16dp"
+        app:layout_constraintEnd_toEndOf="@id/guideLine"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tiEchoOutGain">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etEchoDelays"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="delays (1 - 90000) milliseconds"
+            android:inputType="number"
+            android:padding="12dp"
+            android:text="1000"
+            android:textSize="12sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tiEchoDecays"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_margin="16dp"
+        app:layout_constraintEnd_toEndOf="@id/guideLine"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tiEchoDelays">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etEchoDecays"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="decays (0.1 - 1.0)"
+            android:inputType="numberDecimal"
+            android:padding="12dp"
+            android:text="0.5"
+            android:textSize="12sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
     <Button
         android:id="@+id/btnNormal"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_button"
+        android:padding="0dp"
         android:text="NORMAL"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btnEcho"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
     <Button
         android:id="@+id/btnEcho"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_button"
+        android:padding="0dp"
         android:text="ECHO"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btnReverb"
-        app:layout_constraintStart_toEndOf="@id/btnNormal"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="@+id/tiEchoInGain"
+        app:layout_constraintStart_toStartOf="@id/tiEchoInGain"
+        app:layout_constraintTop_toBottomOf="@id/btnNormal" />
 
     <Button
         android:id="@+id/btnReverb"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_button"
+        android:padding="0dp"
         android:text="REVERB"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btnEcho"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/btnNormal" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideLine"
@@ -95,17 +187,16 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.5" />
 
-
     <ProgressBar
         android:id="@+id/progress_circular"
         android:layout_width="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="wrap_content"
         android:indeterminateTint="#000"
         android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_height="wrap_content"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,14 +4,16 @@ import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
 import com.arthenica.ffmpegkit.FFmpegKit
 import com.ericktijerou.audioeffects.library.*
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import java.io.File
 import java.io.IOException
 
@@ -21,7 +23,98 @@ class EffectsActivity : AppCompatActivity(), FFMpegCallback {
     private var fileNameNew = ""
     private var player: MediaPlayer? = null
     private var mediaConverter: FFMpegMediaConverter? = null
+    private val tiEchoInGain by lazy { findViewById<TextInputLayout>(R.id.tiEchoInGain) }
+    private val tiEchoOutGain by lazy { findViewById<TextInputLayout>(R.id.tiEchoOutGain) }
+    private val tiEchoDelays by lazy { findViewById<TextInputLayout>(R.id.tiEchoDelays) }
+    private val tiEchoDecays by lazy { findViewById<TextInputLayout>(R.id.tiEchoDecays) }
+    private val etEchoInGain by lazy { findViewById<TextInputEditText>(R.id.etEchoInGain) }
+    private val etEchoOutGain by lazy { findViewById<TextInputEditText>(R.id.etEchoOutGain) }
+    private val etEchoDelays by lazy { findViewById<TextInputEditText>(R.id.etEchoDelays) }
+    private val etEchoDecays by lazy { findViewById<TextInputEditText>(R.id.etEchoDecays) }
+    private var isEchoInGainValid = true
+    private var isEchoOutGainValid = true
+    private var isEchoDelayValid = true
+    private var isEchoDecaysValid = true
+    private val btnEcho by lazy { findViewById<Button>(R.id.btnEcho) }
+    public override fun onCreate(icicle: Bundle?) {
+        super.onCreate(icicle)
+        setContentView(R.layout.activity_effects)
+        mediaConverter = FFMpegMediaConverter(this)
+        fileName = intent.getStringExtra("fileName").orEmpty()
+        val dir = File(filesDir, "recordFiles").createDirIfNotExists()
+        fileNameNew = dir.absolutePath + "/audioRecordNew.mp3"
 
+        findViewById<ImageView>(R.id.ivBack).setOnClickListener {
+            onBackPressed()
+        }
+        findViewById<Button>(R.id.btnNormal).setOnClickListener {
+            playNormal()
+        }
+        findViewById<Button>(R.id.btnReverb).setOnClickListener {
+            playChipmunk()
+        }
+        btnEcho.setOnClickListener {
+            playEcho()
+        }
+        val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        audioManager.setStreamVolume(
+            AudioManager.STREAM_MUSIC,
+            audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC),
+            0
+        )
+        etEchoInGain.addTextChangedListener {
+            it?.run {
+                isEchoInGainValid = (isNotEmpty() && (this.toString().toDouble() in 0.1..1.0)).also { isValid ->
+                    if (isValid) {
+                        tiEchoInGain.error = null
+                    } else {
+                        tiEchoInGain.error = "Value is out of range"
+                    }
+                }
+            }
+            updateEchoButton()
+        }
+        etEchoOutGain.addTextChangedListener {
+            it?.run {
+                isEchoOutGainValid = (isNotEmpty() && (this.toString().toDouble() in 0.1..1.0)).also { isValid ->
+                    if (isValid) {
+                        tiEchoOutGain.error = null
+                    } else {
+                        tiEchoOutGain.error = "Value is out of range"
+                    }
+                }
+            }
+            updateEchoButton()
+        }
+        etEchoDelays.addTextChangedListener {
+            it?.run {
+                isEchoDelayValid = (isNotEmpty() && (this.toString().toLong() in 1..90000)).also { isValid ->
+                    if (isValid) {
+                        tiEchoDelays.error = null
+                    } else {
+                        tiEchoDelays.error = "Value is out of range"
+                    }
+                }
+            }
+            updateEchoButton()
+        }
+        etEchoDecays.addTextChangedListener {
+            it?.run {
+                isEchoDecaysValid = (isNotEmpty() && (this.toString().toDouble() in 0.1..1.0)).also { isValid ->
+                    if (isValid) {
+                        tiEchoDecays.error = null
+                    } else {
+                        tiEchoDecays.error = "Value is out of range"
+                    }
+                }
+            }
+            updateEchoButton()
+        }
+    }
+
+    private fun updateEchoButton() {
+        btnEcho.isEnabled = isEchoInGainValid && isEchoOutGainValid && isEchoDelayValid && isEchoDecaysValid
+    }
     private fun start() {
         player = MediaPlayer()
         try {
@@ -51,7 +144,11 @@ class EffectsActivity : AppCompatActivity(), FFMpegCallback {
             player?.stop()
         }
         val source = AudioFile(getFileFromAssets(this, "clap.mp3").getAbsolutePath(), 0)
-        val temporarymp3 = createTempFile(suffix = ".mp3", directory = File(getExternalFilesDir(null)?.absolutePath.orEmpty()), prefix = System.currentTimeMillis().toString())
+        val temporarymp3 = createTempFile(
+            suffix = ".mp3",
+            directory = File(getExternalFilesDir(null)?.absolutePath.orEmpty()),
+            prefix = System.currentTimeMillis().toString()
+        )
         val commands = "-y -i $fileName -filter:a volume=0.0 ${temporarymp3.absolutePath}"
         FFmpegKit.execute(commands.split(" ").toTypedArray())
         val cmd1 = arrayOf(
@@ -83,46 +180,25 @@ class EffectsActivity : AppCompatActivity(), FFMpegCallback {
         if (player != null) {
             player?.stop()
         }
-        val options: Options = Options.Builder(Effects.NONE, fileName, fileNameNew).option3("-ac").build()
+        val options: Options =
+            Options.Builder(Effects.NONE, fileName, fileNameNew).option3("-ac").build()
         mediaConverter?.execute(options)
     }
 
-    private fun playCave() {
+    private fun playEcho() {
         val dir = File(filesDir, "recordFiles").createDirIfNotExists()
         fileNameNew = dir.absolutePath + "/audioRecordEcho.aac"
         showProgress()
         if (player != null) {
             player?.stop()
         }
-        val options: Options = Options.Builder(Effects.CAVE, fileName, fileNameNew).build()
-        mediaConverter?.execute(options)
-    }
 
-    public override fun onCreate(icicle: Bundle?) {
-        super.onCreate(icicle)
-        setContentView(R.layout.activity_effects)
-        mediaConverter = FFMpegMediaConverter(this)
-        fileName = intent.getStringExtra("fileName").orEmpty()
-        val dir = File(filesDir, "recordFiles").createDirIfNotExists()
-        fileNameNew = dir.absolutePath + "/audioRecordNew.mp3"
-        findViewById<ImageView>(R.id.ivBack).setOnClickListener {
-            onBackPressed()
-        }
-        findViewById<Button>(R.id.btnNormal).setOnClickListener {
-            playNormal()
-        }
-        findViewById<Button>(R.id.btnReverb).setOnClickListener {
-            playChipmunk()
-        }
-        findViewById<Button>(R.id.btnEcho).setOnClickListener {
-            playCave()
-        }
-        val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        audioManager.setStreamVolume(
-            AudioManager.STREAM_MUSIC,
-            audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC),
-            0
-        )
+        val options: Options = Options.Builder(
+            "aecho=${etEchoInGain.text}:${etEchoOutGain.text}:${etEchoDelays.text}:${etEchoDecays.text}",
+            fileName,
+            fileNameNew
+        ).build()
+        mediaConverter?.execute(options)
     }
 
     public override fun onStop() {
