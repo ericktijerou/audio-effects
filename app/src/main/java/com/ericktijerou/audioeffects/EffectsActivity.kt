@@ -44,6 +44,8 @@ class EffectsActivity : AppCompatActivity(), FFMpegCallback {
     }
 
     private fun playChipmunk() {
+        val dir = File(filesDir, "recordFiles").createDirIfNotExists()
+        fileNameNew = dir.absolutePath + "/audioRecordReverb.aac"
         showProgress()
         if (player != null) {
             player?.stop()
@@ -75,6 +77,8 @@ class EffectsActivity : AppCompatActivity(), FFMpegCallback {
     }
 
     private fun playNormal() {
+        val dir = File(filesDir, "recordFiles").createDirIfNotExists()
+        fileNameNew = dir.absolutePath + "/audioRecordNormal.aac"
         showProgress()
         if (player != null) {
             player?.stop()
@@ -84,6 +88,8 @@ class EffectsActivity : AppCompatActivity(), FFMpegCallback {
     }
 
     private fun playCave() {
+        val dir = File(filesDir, "recordFiles").createDirIfNotExists()
+        fileNameNew = dir.absolutePath + "/audioRecordEcho.aac"
         showProgress()
         if (player != null) {
             player?.stop()
