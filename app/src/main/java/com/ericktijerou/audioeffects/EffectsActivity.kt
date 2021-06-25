@@ -27,15 +27,22 @@ class EffectsActivity : AppCompatActivity(), FFMpegCallback {
     private val tiEchoOutGain by lazy { findViewById<TextInputLayout>(R.id.tiEchoOutGain) }
     private val tiEchoDelays by lazy { findViewById<TextInputLayout>(R.id.tiEchoDelays) }
     private val tiEchoDecays by lazy { findViewById<TextInputLayout>(R.id.tiEchoDecays) }
+    private val tiReverbDry by lazy { findViewById<TextInputLayout>(R.id.tiReverbDry) }
+    private val tiReverbWet by lazy { findViewById<TextInputLayout>(R.id.tiReverbWet) }
     private val etEchoInGain by lazy { findViewById<TextInputEditText>(R.id.etEchoInGain) }
     private val etEchoOutGain by lazy { findViewById<TextInputEditText>(R.id.etEchoOutGain) }
     private val etEchoDelays by lazy { findViewById<TextInputEditText>(R.id.etEchoDelays) }
     private val etEchoDecays by lazy { findViewById<TextInputEditText>(R.id.etEchoDecays) }
+    private val etReverbDry by lazy { findViewById<TextInputEditText>(R.id.etReverbDry) }
+    private val etReverbWet by lazy { findViewById<TextInputEditText>(R.id.etReverbWet) }
     private var isEchoInGainValid = true
     private var isEchoOutGainValid = true
     private var isEchoDelayValid = true
     private var isEchoDecaysValid = true
+    private var isReverbDryValid = true
+    private var isReverbWetValid = true
     private val btnEcho by lazy { findViewById<Button>(R.id.btnEcho) }
+    private val btnReverb by lazy { findViewById<Button>(R.id.btnReverb) }
     public override fun onCreate(icicle: Bundle?) {
         super.onCreate(icicle)
         setContentView(R.layout.activity_effects)
@@ -51,7 +58,7 @@ class EffectsActivity : AppCompatActivity(), FFMpegCallback {
             playNormal()
         }
         findViewById<Button>(R.id.btnReverb).setOnClickListener {
-            playChipmunk()
+            playReverb()
         }
         btnEcho.setOnClickListener {
             playEcho()
@@ -110,11 +117,40 @@ class EffectsActivity : AppCompatActivity(), FFMpegCallback {
             }
             updateEchoButton()
         }
+        etReverbDry.addTextChangedListener {
+            it?.run {
+                isReverbDryValid = (isNotEmpty() && (this.toString().toInt() in 0..10)).also { isValid ->
+                    if (isValid) {
+                        tiReverbDry.error = null
+                    } else {
+                        tiReverbDry.error = "Value is out of range"
+                    }
+                }
+            }
+            updateReverbButton()
+        }
+        etReverbWet.addTextChangedListener {
+            it?.run {
+                isReverbWetValid = (isNotEmpty() && (this.toString().toInt() in 0..10)).also { isValid ->
+                    if (isValid) {
+                        tiReverbWet.error = null
+                    } else {
+                        tiReverbWet.error = "Value is out of range"
+                    }
+                }
+            }
+            updateReverbButton()
+        }
     }
 
     private fun updateEchoButton() {
         btnEcho.isEnabled = isEchoInGainValid && isEchoOutGainValid && isEchoDelayValid && isEchoDecaysValid
     }
+
+    private fun updateReverbButton() {
+        btnReverb.isEnabled = isReverbDryValid && isReverbWetValid
+    }
+
     private fun start() {
         player = MediaPlayer()
         try {
@@ -136,14 +172,14 @@ class EffectsActivity : AppCompatActivity(), FFMpegCallback {
         mediaConverter?.execute(options)
     }
 
-    private fun playChipmunk() {
+    private fun playReverb() {
         val dir = File(filesDir, "recordFiles").createDirIfNotExists()
         fileNameNew = dir.absolutePath + "/audioRecordReverb.aac"
         showProgress()
         if (player != null) {
             player?.stop()
         }
-        val source = AudioFile(getFileFromAssets(this, "clap.mp3").getAbsolutePath(), 0)
+        val source = AudioFile(getFileFromAssets(this, "clap.mp3").absolutePath, 0)
         val temporarymp3 = createTempFile(
             suffix = ".mp3",
             directory = File(getExternalFilesDir(null)?.absolutePath.orEmpty()),
@@ -158,7 +194,7 @@ class EffectsActivity : AppCompatActivity(), FFMpegCallback {
             "-i",
             source.filePath,
             "-filter_complex",
-            "[0] [1] afir=dry=10:wet=10 [reverb]; [0] [reverb] amix=inputs=2:weights=10 1",
+            "[0] [1] afir=dry=${etReverbDry.text}:wet=${etReverbWet.text} [reverb]; [0] [reverb] amix=inputs=2:weights=10 1",
             fileNameNew
         )
         mediaConverter?.execute(cmd1)

@@ -144,6 +144,50 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tiReverbDry"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_margin="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/guideLine"
+        app:layout_constraintTop_toBottomOf="@id/btnReverb">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etReverbDry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="dry (0 - 10)"
+            android:inputType="number"
+            android:padding="12dp"
+            android:text="10"
+            android:textSize="12sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tiReverbWet"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_margin="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/guideLine"
+        app:layout_constraintTop_toBottomOf="@id/tiReverbDry">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etReverbWet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="wet (0 - 10)"
+            android:inputType="number"
+            android:padding="12dp"
+            android:text="10"
+            android:textSize="12sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
     <Button
         android:id="@+id/btnNormal"
         android:layout_width="wrap_content"
@@ -160,7 +204,7 @@
         android:id="@+id/btnEcho"
         android:layout_width="wrap_content"
         android:layout_height="35dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:background="@drawable/bg_button"
         android:padding="0dp"
         android:text="ECHO"
@@ -172,12 +216,12 @@
         android:id="@+id/btnReverb"
         android:layout_width="wrap_content"
         android:layout_height="35dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:background="@drawable/bg_button"
         android:padding="0dp"
         android:text="REVERB"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btnEcho"
+        app:layout_constraintEnd_toEndOf="@id/tiReverbDry"
+        app:layout_constraintStart_toStartOf="@id/tiReverbDry"
         app:layout_constraintTop_toBottomOf="@id/btnNormal" />
 
     <androidx.constraintlayout.widget.Guideline
