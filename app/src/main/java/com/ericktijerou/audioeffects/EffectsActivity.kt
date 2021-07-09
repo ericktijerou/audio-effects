@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.widget.addTextChangedListener
 import com.arthenica.ffmpegkit.FFmpegKit
 import com.ericktijerou.audioeffects.library.*
@@ -46,6 +47,7 @@ class EffectsActivity : AppCompatActivity(), FFMpegCallback {
     public override fun onCreate(icicle: Bundle?) {
         super.onCreate(icicle)
         setContentView(R.layout.activity_effects)
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         mediaConverter = FFMpegMediaConverter(this)
         fileName = intent.getStringExtra("fileName").orEmpty()
         val dir = File(filesDir, "recordFiles").createDirIfNotExists()
